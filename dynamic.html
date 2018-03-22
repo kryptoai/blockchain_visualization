@@ -73,23 +73,60 @@
                 success: function(data){
                     console.log(data["nodes"])
                     try {
-                        for (var i=0;i < data["nodes"].length; i++){
-                            nodes.add({
-                                id: data["nodes"][i],
-                                label: data["nodes"][i]
+
+                        // for (var i=0;i < data["nodes"].length; i++){
+                        //     nodes.add({
+                        //         id: data["nodes"][i],
+                        //         label: data["nodes"][i]
+                        //     });
+                        // }
+
+                        // for (var i=0; i<data["edges"].length; i++){
+                        //     for (j in data["edges"][i]){
+
+                        //         edges.add({
+                        //             id: j,
+                        //             from: j,
+                        //             to: data["edges"][i][j]
+                        //         });
+
+                        //     }
+                        // }
+
+                        // create a network
+                        var container = document.getElementById('network');
+                        var data = {
+                            nodes: nodes,
+                            edges: edges
+                        };
+                        var options = { };
+                        network = new vis.Network(container, data, options);
+
+                        network.on("stabilizationIterationsDone", function () {
+                            network.setOptions({
+                                physics: {enabled: false}
                             });
+                        });
+
+                        for (var i=0;i<10;i++){
+                            nodes.add({
+                                id: i,
+                                label: i
+                            });
+
                         }
 
-                        for (var i=0; i<data["edges"].length; i++){
-                            for (j in data["edges"][i]){
+                        var j=1;
+                        var idNum=0;
+                        while (j!==10){
+                            edges.add({
+                                id: idNum,
+                                from: 0,
+                                to: j
 
-                                edges.add({
-                                    id: j,
-                                    from: j,
-                                    to: data["edges"][i][j]
-                                });
-
-                            }
+                            });
+                            idNum++;
+                            j++;
                         }
 
                     }
@@ -223,8 +260,14 @@
                 nodes: nodes,
                 edges: edges
             };
-            var options = {};
+            var options = { };
             network = new vis.Network(container, data, options);
+
+            network.on("stabilizationIterationsDone", function () {
+                network.setOptions({
+                    physics: {enabled: false}
+                });
+            });
 
         }
 

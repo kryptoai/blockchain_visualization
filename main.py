@@ -20,12 +20,12 @@ def support_jsonp(f):
 @app.route('/')
 @support_jsonp
 def reply():
-    print request.args
-    callback = request.args.get('callback')
-    # return '{0}({1})'.format(callback, {'node': 10, 'label': 'alex'})
-    return flask.jsonify({'node': 10, 'label': 'alex'})
-    # return flask.jsonify({'id': "1", 'label' : 'Alex'})
+    # return flask.jsonify({'node': 10, 'label': 'alex'})
+    return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
 
 
 if __name__ == "__main__":
 	app.run()
+
+
+# { "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] }

@@ -71,7 +71,6 @@
                 url: "http://localhost:5000/",
                 dataType: "jsonp",
                 success: function(data){
-                    console.log(data["nodes"])
                     try {
 
                         // for (var i=0;i < data["nodes"].length; i++){
@@ -108,7 +107,7 @@
                         //     });
                         // });
 
-                        for (var i=0;i<5000;i++){
+                        for (var i=0;i<10;i++){
                             nodes.add({
                                 id: i,
                                 label: i
@@ -118,7 +117,7 @@
 
                         var j=1;
                         var idNum=0;
-                        while (j!==5000){
+                        while (j!==10){
                             edges.add({
                                 id: idNum,
                                 from: 0,
@@ -293,7 +292,7 @@
                     minVelocity: 0.75,
                     maxVelocity: 25,
                     solver: "forceAtlas2Based",
-                    iterations: 100,
+                    // iterations: 100,
                     timestep: 0.5,
                     forceAtlas2Based: {
                         springLength: 100,
@@ -320,6 +319,13 @@
             // });
 
         }
+
+
+            network.on( "click", function(properties) {
+                var ids = properties.nodes;
+                var clickedNodes = nodes.get(ids);
+                console.log('clicked nodes:');
+            });
 
     </script>
     
@@ -363,17 +369,17 @@
     </colgroup>
     <tr>
         <td>
-            <h2>Nodes</h2>
+            <h2>Addresses</h2>
             <pre id="nodes"></pre>
         </td>
 
         <td>
-            <h2>Edges</h2>
+            <h2>Transactions</h2>
             <pre id="edges"></pre>
         </td>
 
         <td>
-            <h2>Network</h2>
+            <h2>Wallet Interaction</h2>
 
             <div id="network"></div>
         </td>

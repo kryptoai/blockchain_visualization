@@ -70,7 +70,6 @@
             $.ajax({
                 url: "http://localhost:5000/",
                 dataType: "jsonp",
-                // data: "callback=?",
                 success: function(data){
 
                     try {
@@ -211,26 +210,29 @@
             <table>
                 <tr>
                     <td></td>
-                    <td><label for="node-id">Id</label></td>
+<!--                     <td><label for="node-id">Id</label></td>
+                    <td><input id="node-id" type="text" value="6"></td> -->
+                    <td><label for="node-id">BTC Wallet Address</label></td>
                     <td><input id="node-id" type="text" value="6"></td>
                 </tr>
-                <tr>
+<!--                 <tr>
                     <td></td>
                     <td><label for="node-label">Label</label></td>
                     <td><input id="node-label" type="text" value="Node 6"></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td></td>
                     <td>Action</td>
                     <td>
-                        <button id="node-add" onclick="addNode();">Add</button>
-                        <button id="node-update" onclick="updateNode();">Update</button>
-                        <button id="node-remove" onclick="removeNode();">Remove</button>
+                        <button id="node-add" onclick="addNode();">Search</button>
+<!--                         <button id="node-update" onclick="updateNode();">Update</button>
+                        <button id="node-remove" onclick="removeNode();">Remove</button> -->
                     </td>
                 </tr>
             </table>
         </td>
-        <td>
+
+<!--         <td>
             <h2>Edge</h2>
             <table>
                 <tr>
@@ -258,7 +260,8 @@
                     </td>
                 </tr>
             </table>
-        </td>
+        </td> -->
+        
     </tr>
 
 </table>

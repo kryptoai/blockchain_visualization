@@ -93,20 +93,20 @@
                         //     }
                         // }
 
-                        // create a network
-                        var container = document.getElementById('network');
-                        var data = {
-                            nodes: nodes,
-                            edges: edges
-                        };
-                        var options = { };
-                        network = new vis.Network(container, data, options);
+                        // // create a network
+                        // var container = document.getElementById('network');
+                        // var data = {
+                        //     nodes: nodes,
+                        //     edges: edges
+                        // };
+                        // var options = { };
+                        // network = new vis.Network(container, data, options);
 
-                        network.on("stabilizationIterationsDone", function () {
-                            network.setOptions({
-                                physics: {enabled: false}
-                            });
-                        });
+                        // network.on("stabilizationIterationsDone", function () {
+                        //     network.setOptions({
+                        //         physics: {enabled: false}
+                        //     });
+                        // });
 
                         for (var i=0;i<10;i++){
                             nodes.add({
@@ -260,7 +260,21 @@
                 nodes: nodes,
                 edges: edges
             };
-            var options = { };
+            // var options = {  };
+var options = {
+  "edges": {
+    "smooth": false
+  },
+  "physics": {
+    "enabled": false,
+    "barnesHut": {
+      "avoidOverlap": 1
+    },
+    "minVelocity": 0.75
+  }
+}
+
+
             network = new vis.Network(container, data, options);
 
             network.on("stabilizationIterationsDone", function () {
@@ -284,57 +298,21 @@
             <table>
                 <tr>
                     <td></td>
-<!--                     <td><label for="node-id">Id</label></td>
-                    <td><input id="node-id" type="text" value="6"></td> -->
                     <td><label for="node-id">BTC Wallet Address</label></td>
                     <td><input id="node-id" type="text" value="6"></td>
                 </tr>
-<!--                 <tr>
-                    <td></td>
-                    <td><label for="node-label">Label</label></td>
-                    <td><input id="node-label" type="text" value="Node 6"></td>
-                </tr> -->
+
                 <tr>
                     <td></td>
-<!--                     <td>Action</td>
- -->                    <td>
+
+                    <td>
                         <button id="node-add" onclick="createNetwork();">Search</button>
-<!--                         <button id="node-update" onclick="updateNode();">Update</button>
-                        <button id="node-remove" onclick="removeNode();">Remove</button> -->
+
                     </td>
                 </tr>
             </table>
         </td>
 
-<!--         <td>
-            <h2>Edge</h2>
-            <table>
-                <tr>
-                    <td></td>
-                    <td><label for="edge-id">Id</label></td>
-                    <td><input id="edge-id" type="text" value="5"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><label for="edge-from">From</label></td>
-                    <td><input id="edge-from" type="text" value="3"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><label for="edge-to">To</label></td>
-                    <td><input id="edge-to" type="text" value="4"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Action</td>
-                    <td>
-                        <button id="edge-add" onclick="addEdge();">Add</button>
-                        <button id="edge-update" onclick="updateEdge();">Update</button>
-                        <button id="edge-remove" onclick="removeEdge();">Remove</button>
-                    </td>
-                </tr>
-            </table>
-        </td> -->
 
     </tr>
 

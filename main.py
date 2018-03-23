@@ -20,12 +20,13 @@ def support_jsonp(f):
 @app.route('/')
 @support_jsonp
 def reply():
-    # return flask.jsonify({'node': 10, 'label': 'alex'})
     return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
 
+@app.route('/data')
+def data():
+    return "data"
 
 if __name__ == "__main__":
 	app.run()
 
 
-# { "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] }

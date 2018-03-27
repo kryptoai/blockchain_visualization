@@ -23,6 +23,9 @@
         table.view {
             width: 100%;
         }
+  /*      node-id {
+            width: 75%;
+        }*/
 
         table td {
             vertical-align: top;
@@ -67,71 +70,76 @@
 
         function createNetwork() {
 
+            UserWalletID = document.getElementById('node-id').value;
+
             $.ajax({
+                type: "POST",
                 url: "http://localhost:5000/",
-                dataType: "jsonp",
+                data: JSON.stringify({walletId: UserWalletID}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
                 success: function(data){
                     try {
-
-                        // for (var i=0;i < data["nodes"].length; i++){
-                        //     nodes.add({
-                        //         id: data["nodes"][i],
-                        //         label: data["nodes"][i]
-                        //     });
-                        // }
-
-                        // for (var i=0; i<data["edges"].length; i++){
-                        //     for (j in data["edges"][i]){
-
-                        //         edges.add({
-                        //             id: j,
-                        //             from: j,
-                        //             to: data["edges"][i][j]
-                        //         });
-
-                        //     }
-                        // }
-
-                        // // create a network
-                        // var container = document.getElementById('network');
-                        // var data = {
-                        //     nodes: nodes,
-                        //     edges: edges
-                        // };
-                        // var options = { };
-                        // network = new vis.Network(container, data, options);
-
-                        // network.on("stabilizationIterationsDone", function () {
-                        //     network.setOptions({
-                        //         physics: {enabled: false}
-                        //     });
-                        // });
-
-                        var nodeData;
-                        for (var i=0;i<200;i++){
+                        console.log(data);
+                        for (var i=0;i < data["nodes"].length; i++){
                             nodes.add({
-                                id: i,
-                                label: i
+                                id: data["nodes"][i],
+                                label: data["nodes"][i]
                             });
-
-                            // nodeData += (i + " ,");
-
                         }
 
-                        // document.getElementById('nodes').innerHTML = nodeData;
+                        for (var i=0; i<data["edges"].length; i++){
+                            for (j in data["edges"][i]){
 
-                        var j=1;
-                        var idNum=0;
-                        while (j!==200){
-                            edges.add({
-                                id: idNum,
-                                from: 0,
-                                to: j
+                                edges.add({
+                                    id: j,
+                                    from: j,
+                                    to: data["edges"][i][j]
+                                });
 
-                            });
-                            idNum++;
-                            j++;
+                            }
                         }
+
+                        // create a network
+                        var container = document.getElementById('network');
+                        var data = {
+                            nodes: nodes,
+                            edges: edges
+                        };
+                        var options = { };
+                        network = new vis.Network(container, data, options);
+
+                        network.on("stabilizationIterationsDone", function () {
+                            network.setOptions({
+                                physics: {enabled: false}
+                            });
+                        });
+
+                        // var nodeData;
+                        // for (var i=0;i<200;i++){
+                        //     nodes.add({
+                        //         id: i,
+                        //         label: i
+                        //     });
+
+                        //     // nodeData += (i + " ,");
+
+                        // }
+
+                        // // document.getElementById('nodes').innerHTML = nodeData;
+
+                        // var j=1;
+                        // var idNum=0;
+                        // while (j!==200){
+                        //     edges.add({
+                        //         id: idNum,
+                        //         from: 0,
+                        //         to: j
+
+                        //     });
+                        //     idNum++;
+                        //     j++;
+                        // }
 
                     }
                     catch (err) {
@@ -236,6 +244,7 @@
             // create an array with nodes
             nodes = new vis.DataSet();
             nodes.on('*', function () {
+                console.log(JSON.stringify(nodes.get(), null, 4));
             document.getElementById('nodes').innerHTML = JSON.stringify(nodes.get(), null, 4);
             // console.log(nodes.get())
             // nodes = nodes.get();
@@ -335,7 +344,7 @@
                 var edge = properties.edges;
                 var clickedNodes = nodes.get(ids);
                 var clickedEdges = edges.get(edge);
-                console.log(clickedEdges);
+                // console.log(clickedEdges);
 
                 var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];
 
@@ -357,18 +366,18 @@
 <table>
     <tr>
         <td>
-            <table>
+            <table width="400">
                 <tr>
                     <td></td>
                     <td><label for="node-id">BTC Wallet Address</label></td>
-                    <td><input id="node-id" type="text" value="6"></td>
+                    <td><input id="node-id" type="text" style="width:300px;" value="18jBahWxRXYj7y6ok3FdMUeXy1wMCDeNgQ"></td>
                 </tr>
 
                 <tr>
                     <td></td>
 
                     <td>
-                        <button id="node-add" onclick="createNetwork();">Search</button>
+                        <button id="node-add" onclick='createNetwork();'>Search</button>
 
                     </td>
                 </tr>

@@ -30,18 +30,29 @@ def reply():
     elif request.method == "GET":
         return "test"
 
+# { "nodes": "" }
+
 @app.route('/data')
 def data():
     return "data"
 
 def findWalletTxs(walletId):
+    nodes = []
+    edges = []
     client = MongoClient('18.222.1.53',username='admin',password='diet4coke')
     db = client.cryptoData
     queryWallet = { "_id": walletId}
     cursor = db.wallets.find(queryWallet)
     for wallet in cursor:
         for txs in wallet["txs"]:
-            print json.dumps(txs)
+            for out in txs["vout"]:
+                out_addr = out["scriptPubKey"]["addresses"][0]
+                print out_addr
+                if out_addr not in nodes:
+                    nodes.append(out_addr)
+                else:
+                    continue
+        print nodes
         return wallet
         break
 

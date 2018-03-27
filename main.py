@@ -1,32 +1,52 @@
 from flask import Flask, request, redirect, current_app
 import flask
 from functools import wraps
+from pymongo import MongoClient
+import requests
 import json
 
 app = Flask(__name__)
 
-def support_jsonp(f):
-    """Wraps JSONified output for JSONP"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        callback = request.args.get('callback', False)
-        if callback:
-            content = str(callback) + '(' + str(f().data) + ')'
-            return current_app.response_class(content, mimetype='application/json')
-        else:
-            return f(*args, **kwargs)
-    return decorated_function
+# def support_jsonp(f):
+#     """Wraps JSONified output for JSONP"""
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         callback = request.args.get('callback', False)
+#         if callback:
+#             content = str(callback) + '(' + str(f().data) + ')'
+#             return current_app.response_class(content, mimetype='application/json')
+#         else:
+#             return f(*args, **kwargs)
+#     return decorated_function
 
-@app.route('/')
-@support_jsonp
+@app.route('/', methods=['GET','POST'])
+# @support_jsonp
 def reply():
-    return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
+    data = request.get_json()
+    # print data["walletId"]
+    findWalletTxs(data["walletId"])
+    if request.method == "POST":
+        return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
+    elif request.method == "GET":
+        return "test"
 
 @app.route('/data')
 def data():
     return "data"
 
+def findWalletTxs(walletId):
+    client = MongoClient('18.222.1.53',username='admin',password='diet4coke')
+    db = client.cryptoData
+    queryWallet = { "_id": walletId}
+    cursor = db.wallets.find(queryWallet)
+    for wallet in cursor:
+        for txs in wallet["txs"]:
+            print json.dumps(txs)
+        return wallet
+        break
+
 if __name__ == "__main__":
 	app.run()
 
 
+client = MongoClient('18.222.1.53/admin',username='admin',password='diet4coke')

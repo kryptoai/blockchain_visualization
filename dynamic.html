@@ -80,11 +80,19 @@
                 dataType: "json",
                 success: function(data){
                     try {
+
+
                         console.log(data);
                         for (var i=0;i < data["nodes"].length; i++){
+
+                            var labelName = JSON.stringify(data["nodes"][i]);
+                            // console.log(labelName + "blah");
+
+                            var l = labelName.substr(1,6);
                             nodes.add({
                                 id: data["nodes"][i],
-                                label: data["nodes"][i]
+                                // label: data["nodes"][i]
+                                label: l
                             });
                         }
 
@@ -92,7 +100,7 @@
                             for (j in data["edges"][i]){
 
                                 edges.add({
-                                    id: j,
+                                    // id: j,
                                     from: j,
                                     to: data["edges"][i][j]
                                 });
@@ -100,20 +108,22 @@
                             }
                         }
 
-                        // create a network
-                        var container = document.getElementById('network');
-                        var data = {
-                            nodes: nodes,
-                            edges: edges
-                        };
-                        var options = { };
-                        network = new vis.Network(container, data, options);
+                        // // create a network
+                        // var container = document.getElementById('network');
+                        // var data = {
+                        //     nodes: nodes,
+                        //     edges: edges
+                        // };
+                        // var options = { };
+                        // network = new vis.Network(container, data, options);
 
-                        network.on("stabilizationIterationsDone", function () {
-                            network.setOptions({
-                                physics: {enabled: false}
-                            });
-                        });
+                        // network.on("stabilizationIterationsDone", function () {
+                        //     network.setOptions({
+                        //         physics: {enabled: false}
+                        //     });
+                        // });
+
+
 
                         // var nodeData;
                         // for (var i=0;i<200;i++){
@@ -141,10 +151,15 @@
                         //     j++;
                         // }
 
+
+                        
+
                     }
                     catch (err) {
                         alert(err);
                     }
+
+
 
                 }
             });
@@ -168,7 +183,7 @@
                         alert(err);
                     }
 
-                    console.log(data);
+                    // console.log(data);
                 }
             });
         }
@@ -184,7 +199,7 @@
                 alert(err);
             }
 
-            console.log(data);
+            // console.log(data);
         }
 
         function updateNode() {
@@ -244,7 +259,7 @@
             // create an array with nodes
             nodes = new vis.DataSet();
             nodes.on('*', function () {
-                console.log(JSON.stringify(nodes.get(), null, 4));
+                // console.log(JSON.stringify(nodes.get(), null, 4));
             document.getElementById('nodes').innerHTML = JSON.stringify(nodes.get(), null, 4);
             // console.log(nodes.get())
             // nodes = nodes.get();

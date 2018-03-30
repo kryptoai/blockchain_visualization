@@ -87,33 +87,77 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function(data){
-                    console.log(data);
                     try {
-
+                        console.log(edges);
                         console.log(data);
-                        for (var i=0;i < data["nodes"].length; i++){
 
-                            var labelName = JSON.stringify(data["nodes"][i]);
+
+                        for (var i=0;i < data["nodes"]["regular"].length; i++){
+
+                            var labelName = JSON.stringify(data["nodes"]["regular"][i]);
+                            // console.log(labelName + "blah");
+
+                            // console.log(data["nodes"]["regular"][i])
+
+                            var l = labelName.substr(1,6);
+                            nodes.add({
+                                id: data["nodes"]["regular"][i],
+                                // label: data["nodes"][i]
+                                label: l,
+                                type: "regular"
+                            });
+                        }
+
+                        for (var i=0;i < data["nodes"]["intermediary"].length; i++){
+
+                            var labelName = JSON.stringify(data["nodes"]["intermediary"][i]);
                             // console.log(labelName + "blah");
 
                             var l = labelName.substr(1,6);
                             nodes.add({
-                                id: data["nodes"][i],
+                                id: data["nodes"]["intermediary"][i],
                                 // label: data["nodes"][i]
-                                label: l
+                                label: l,
+                                type: "intermediary"
                             });
+
+                            var inter_node = nodes.get(data["nodes"]["intermediary"][i]);
+                            inter_node.color = {
+                                border: '#8AFF33',
+                                background: '#33FF5E',
+                                highlight: {
+                                    border: '#2B7CE9',
+                                    background: '#D2E5FF'
+                                }
+                            }
+
+                            nodes.update(inter_node);
                         }
 
-                        for (var i=0; i<data["edges"].length; i++){
-                            for (j in data["edges"][i]){
 
+                        for (var i=0; i<data["edges"].length; i++){
+              
                                 edges.add({
-                                    from: j,
-                                    to: data["edges"][i][j]
+                                    from: data["edges"][i]["from"],
+                                    to: data["edges"][i]["to"]
                                 });
 
-                            }
-                        }                       
+                        }   
+
+                        // console.log(edges);
+
+                        // for (var i=0; i<data["edges"].length; i++){
+                        //     for (j in data["edges"][i]){
+
+                        //         console.log(j + "blah");
+                        //         console.log(data["edges"][i][j])
+                        //         edges.add({
+                        //             from: j,
+                        //             to: data["edges"][i][j]
+                        //         });
+
+                        //     }
+                        // }                       
 
                     }
                     catch (err) {
@@ -243,6 +287,10 @@
                 },
                 edges: {
                     width: 1,
+                    arrows: {
+                      to:     {enabled: true, scaleFactor:1, type:'arrow'},
+                      from:   {enabled: false, scaleFactor:1, type:'arrow'}
+                    },
                     color: {
                         color: 'rgba(0,100,102,0.3)',
                         highlight: 'rgba(0,0,102,0.7)',
@@ -281,6 +329,7 @@
                 var ids = properties.nodes;
                 var edge = properties.edges;
                 var clickedNodes = nodes.get(ids);
+                console.log(clickedNodes);
                 var clickedEdges = edges.get(edge);
 
                 var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];

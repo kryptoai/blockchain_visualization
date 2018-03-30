@@ -22,6 +22,7 @@ def reply():
     if request.method == "POST":
         return flask.jsonify(obj)
         # return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
+        # return flask.jsonify({ "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{"123" : "456"}] })
     elif request.method == "GET":
         return "test"
 

@@ -88,8 +88,8 @@
                 dataType: "json",
                 success: function(data){
                     try {
-                        console.log(edges);
-                        console.log(data);
+                        // console.log(edges);
+                        // console.log(data);
 
 
                         for (var i=0;i < data["nodes"]["regular"].length; i++){
@@ -329,10 +329,29 @@
                 var ids = properties.nodes;
                 var edge = properties.edges;
                 var clickedNodes = nodes.get(ids);
-                console.log(clickedNodes);
                 var clickedEdges = edges.get(edge);
 
-                var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];
+                console.log(clickedNodes);
+                console.log(clickedEdges); 
+
+                // if (clickedNodes[0]["type"] == "intermediary"){
+                //     console.log("intermediary node")
+
+                if (clickedNodes[0]["type"] == "intermediary"){
+                    console.log("intermediary node")
+                    var output = "From: ";
+                    for(edge in clickedEdges){
+                        console.log(edge);
+                        output += edge["from"];
+                    }
+                    // for (edge )
+                    console.log(output)
+                }
+
+                // }
+                // var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];
+
+
 
                 document.getElementById('edges').innerHTML = output;
             });

@@ -18,7 +18,7 @@ def reply():
     obj = findWalletTxs(data["walletId"])
     # obj["nodes"] = nodes
     # obj["edges"] = edges
-    print json.dumps(obj)
+    # print json.dumps(obj)
     if request.method == "POST":
         return flask.jsonify(obj)
         # return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })

@@ -15,11 +15,13 @@ def reply():
     # edges = []
     # obj = {}
     # nodes,edges = findWalletTxs(data["walletId"])
-    obj = findWalletTxs(data["walletId"])
+    # obj = findWalletTxs(data["walletId"])
     # obj["nodes"] = nodes
     # obj["edges"] = edges
     # print json.dumps(obj)
     if request.method == "POST":
+        data = request.get_json()
+        obj = findWalletTxs(data["walletId"])
         return flask.jsonify(obj)
         # return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
         # return flask.jsonify({ "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{"123" : "456"}] })

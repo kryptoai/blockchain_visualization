@@ -4,6 +4,7 @@ from functools import wraps
 from pymongo import MongoClient
 import requests
 import json
+import time
 
 app = Flask(__name__)
 
@@ -24,6 +25,10 @@ def reply():
         print data
         obj = findWalletTxs(data["walletId"])
         obj["addressInfo"] = addressInfo(data["walletId"])
+        obj["txsHistory"] = txsHistory(data["walletId"])
+        print "************"
+        print firstTx(txsHistory(data["walletId"]))
+        print "*************"
         print json.dumps(obj)
         return flask.jsonify(obj)
         # print json.dumps(addressInfo(data["walletId"]))
@@ -147,7 +152,55 @@ def numberOfTxs(addressId):
             counter += 1
     return counter
 
+def txsHistory(addressId):
+    client = MongoClient('18.222.1.53',username='admin',password='diet4coke')
+    db = client.cryptoData
+    queryWallet = { "_id": addressId }
+    cursor = db.wallets.find(queryWallet)
+    txList = []
+    for wallet in cursor:
+        for txs in wallet["txs"]:
+            data = {}
+            data["txsHash"] = txs["txid"]
+            data["height"] = txs["blockheight"]
+            data["time"] = txs["blocktime"]
+            data["amount"] = txs["valueOut"]
+            data["amountUsd"] = btcUSD(data["amount"])
+            # get in address and amount 
+            in_list = []
+            for vin in txs["vout"]:
+                in_obj = {}
+                in_addr = vin["scriptPubKey"]["addresses"][0]
+                in_value = vin["value"]
 
+                in_obj["addr"] = in_addr
+                in_obj["value"] = in_value
+
+                in_list.append(in_obj)
+
+            # get in address and amount 
+            out_list = []
+            for vout in txs["vin"]:
+                out_obj = {}
+                out_addr = vout["addr"]
+                out_value = vout["value"]
+
+                out_obj["addr"] = out_addr
+                out_obj["value"] = out_value
+
+                out_list.append(out_obj)            
+
+            data["from"] = in_list
+            data["to"] = out_list
+            txList.append(data)
+    return txList
+
+def firstTx(txList):
+    firstTxTime = time.time()
+    for tx in txList:
+        if tx["time"] <= firstTxTime:
+            firstTxTime = tx["time"]
+    return firstTxTime
 
 def coinRisk(addressId):
     return "40"

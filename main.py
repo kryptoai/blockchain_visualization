@@ -21,8 +21,13 @@ def reply():
     # print json.dumps(obj)
     if request.method == "POST":
         data = request.get_json()
+        print data
         obj = findWalletTxs(data["walletId"])
+        obj["addressInfo"] = addressInfo(data["walletId"])
+        print json.dumps(obj)
         return flask.jsonify(obj)
+        # print json.dumps(addressInfo(data["walletId"]))
+
         # return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
         # return flask.jsonify({ "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{"123" : "456"}] })
     elif request.method == "GET":
@@ -30,7 +35,7 @@ def reply():
 
 # { "nodes" : ["123" , "456" , "789"], "edges" : [{ "from" : "123", "intermediary": "54300", "value": "1.2"} }, { "intermediary":"54300", "to": "789", "value": "0.7"}] }
 
-# { "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{ "from" : "123", "to": "54300", "value": "1.2"} }, { "from":"54300", "to": "789", "value": "0.7"}] }
+# { "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{ "from" : "123", "to": "54300", "value": "1.2"} }, { "from":"54300", "to": "789", "value": "0.7"}], "addressInfo": { "coinRisk": "45", "classification": "exchange", "balance": "12", "balanceUSD": "200000", "totalTxs": "6", "avgTxs": "514.2", "firstReceived": "08/16/2014 22:43", "totalReceived": "92", "totalSent": "92"} , "txsHistory": [ { "blockHeight": "500000", "txsHash": "a00...", "txsDate": "12/20/2017", "amount": "2", "amountUSD": "13000", "from": "blah", "to": "blah" } ] }
 
 
 
@@ -47,7 +52,12 @@ def findWalletTxs(walletId):
     queryWallet = { "_id": walletId}
     cursor = db.wallets.find(queryWallet)
     for wallet in cursor:
+        # print json.dumps(wallet)
+        # break
         for txs in wallet["txs"]:
+
+            # print json.dumps(txs)
+            # break
 
             # if only 1 sender  
             if len(txs["vin"]) < 2:
@@ -104,59 +114,47 @@ def findWalletTxs(walletId):
         return_obj["nodes"] = all_nodes
         return_obj["edges"] = edges
         return return_obj
-            # print nodes 
-            # print edges 
-            # break
+
+def addressInfo(addressId):
+    addressInfo = {}
+    addressInfo["coinRisk"] = coinRisk(addressId)
+    addressInfo["classification"] = classify(addressId)
+    r = requests.get("https://blockexplorer.com/api/addr/" + addressId + "/balance")
+    addressInfo["balance"] = r.text
+    addressInfo["balanceUSD"] = btcUSD(addressInfo["balance"])
+    addressInfo["totalTxs"] = numberOfTxs(addressId)
+    r = requests.get("https://blockexplorer.com/api/addr/" + addressId + "/totalReceived")
+    addressInfo["totalReceived"] = int(r.text) * 0.00000001
+    r = requests.get("https://blockexplorer.com/api/addr/" + addressId + "/totalSent")
+    addressInfo["totalSent"] = int(r.text) * 0.00000001
+    addressInfo["avgTxs"] = float(addressInfo["totalSent"]) / float(numberOfTxs(addressId))
+    return addressInfo
+
+
+def btcUSD(btc):
+    r = requests.get("https://api.coinmarketcap.com/v1/ticker/bitcoin/")
+    data = json.loads(r.text)
+    return float(btc) * float(data[0]["price_usd"])
+
+def numberOfTxs(addressId):
+    client = MongoClient('18.222.1.53',username='admin',password='diet4coke')
+    db = client.cryptoData
+    queryWallet = { "_id": addressId }
+    cursor = db.wallets.find(queryWallet)
+    for wallet in cursor:
+        counter = 0
+        for txs in wallet["txs"]:
+            counter += 1
+    return counter
 
 
 
+def coinRisk(addressId):
+    return "40"
 
-        # print nodes
-        # print "*****"
-        # print edges
-        # break
+def classify(addressId):
+    return "Exchange"
 
-
-            # if multiple senders, create intermediary nodes for each 
-
-            # print json.dumps(txs)
-            # break
-            # nodesIn = []
-            # nodesOut = []
-            # edgesTmp = []
-            # for vout in txs["vout"]:
-            #     out_addr = vout["scriptPubKey"]["addresses"][0]
-            #     nodesOut.append(out_addr)
-            # for vin in txs["vin"]:
-            #     in_addr = vin["addr"]
-            #     nodesIn.append(in_addr)
-
-            # # create edges here
-            # if (len(nodesIn) >= 2 or len(nodesOut) >= 2):
-            #     for node in nodesIn:
-            #         obj = {} 
-            #         obj[node] = txs["blockheight"]
-            #         edgesTmp.append(obj)
-            #     for node in nodesOut:
-            #         obj = {} 
-            #         obj[node] = txs["blockheight"]
-            #         edgesTmp.append(obj)
-            #     nodesIn.append(txs["blockheight"])
-            # else:
-            #     obj = {}
-            #     obj[nodesIn[0]] = nodesOut[0]
-
-            # for node in nodesIn:
-            #     if node not in nodes:
-            #         nodes.append(node)
-            # for node in nodesOut:
-            #     if node not in nodes:
-            #         nodes.append(node)
-            # for edge in edgesTmp:
-            #     if edge not in edges:
-            #         edges.append(edge)
-
-    # return nodes, edges
 
 if __name__ == "__main__":
 	app.run()

@@ -1,7 +1,7 @@
 import sys 
-sys.path.insert(0, '/var/www/html/main')
+sys.path.insert(0, '/var/www/html/KryptoDemoPrototype')
 
-from KryptoDemoPrototype import app as application
+from main import app as application
 
 # WSGIDaemonProcess KryptoDemoPrototype threads=5
 # WSGIScriptAlias / /var/www/html/KryptoDemoPrototype/main.wsgi

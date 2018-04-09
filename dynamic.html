@@ -27,10 +27,14 @@
             width: 75%;
         }*/
 
+/*        td { border: solid black 1px; }
+*/        
+/*        tr, td{ display: inline-block; }
+*/
         table td {
             vertical-align: top;
             display: block;
-        }
+        }   
 
         table table {
             background-color: #f5f5f5;
@@ -82,6 +86,7 @@
 
             $.ajax({
                 type: "POST",
+                // url: "http://18.222.1.53/",
                 url: "http://localhost:5000/",
                 data: JSON.stringify({walletId: UserWalletID}),
                 contentType: "application/json; charset=utf-8",
@@ -89,7 +94,7 @@
                 success: function(data){
                     try {
                         // console.log(edges);
-                        // console.log(data);
+                        console.log(data);
 
 
                         for (var i=0;i < data["nodes"]["regular"].length; i++){
@@ -332,14 +337,33 @@
                 var clickedEdges = edges.get(edge);
 
                 console.log(clickedNodes);
-                console.log(clickedEdges); 
+                // console.log(clickedEdges); 
 
                 // if (clickedNodes[0]["type"] == "intermediary"){
                 //     console.log("intermediary node")
+                // console.log(output)
+
+                if (clickedNodes[0]["type"] == "regular"){
+                    var output = "Wallet Address: " + clickedNodes[0]["id"];
+                    output += "\n";
+                    output += "Coin Rank: 20%";
+                    output += "\n";
+                    output += "Transaction Amount: 1.33 BTC";
+                    output += "\n";
+                    output += "Average Transaction Size: 4.51 BTC";
+                    output += "\n";
+                    output += "Time: 2018 Jan 11th";
+                    output += "\n";
+                    output += "Account Classification: regular"
+
+                    // transaction amount, transaction time, cleaness %, average transaction size, current balance 
+                    
+                }
 
                 if (clickedNodes[0]["type"] == "intermediary"){
                     console.log("intermediary node")
                     var output = "From: ";
+
                     for(edge in clickedEdges){
                         console.log(edge);
                         output += edge["from"];
@@ -349,7 +373,7 @@
                 }
 
                 // }
-                // var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];
+                    // var output = "Transaction Hash: " + clickedEdges[0]["id"] + " From: " + clickedEdges[0]["from"] + " To: " + clickedEdges[0]["to"];
 
 
 
@@ -364,7 +388,7 @@
 
 <body onload="draw();">
 
-<h1>Wallet Tracking</h1>
+<h1>Krypto AI</h1>
 <table>
     <tr>
         <td>
@@ -389,29 +413,38 @@
 
 </table>
 
-<h1>View</h1>
 <table class="view">
     <colgroup>
         <col width="25%">
         <col width="25%">
         <col width="50%">
     </colgroup>
+
+    <td>
+        <h2>Wallet Interaction</h2>
+        <div id="network"></div>
+    </td>
+
     <tr>
 <!--         <td>
             <h2>Addresses</h2>
             <pre id="nodes"></pre>
         </td> -->
 
-        <td>
+<!--         <td>
             <h2>Wallet Interaction</h2>
             <div id="network"></div>
-        </td>
-
-
+        </td> -->
         <td>
-            <h2>Transactions</h2>
+            <h2>Transaction Data</h2>
             <pre id="edges"></pre>
         </td>
+
+ <!--        <td>
+            <h2>Wallet Data</h2>
+            <pre id="wallet"></pre>
+        </td> -->
+
 
     </tr>
 </table>

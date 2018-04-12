@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import requests
 import json
 import time
+import datetime
 
 app = Flask(__name__)
 
@@ -22,13 +23,12 @@ def reply():
     # print json.dumps(obj)
     if request.method == "POST":
         data = request.get_json()
-        print data
+        # print data
         obj = findWalletTxs(data["walletId"])
         obj["addressInfo"] = addressInfo(data["walletId"])
         obj["txsHistory"] = txsHistory(data["walletId"])
-        print "************"
-        print firstTx(txsHistory(data["walletId"]))
-        print "*************"
+        firstTransaction = firstTx(txsHistory(data["walletId"]))
+        obj["addressInfo"]["firstTx"] = firstTransaction        
         print json.dumps(obj)
         return flask.jsonify(obj)
         # print json.dumps(addressInfo(data["walletId"]))
@@ -42,7 +42,7 @@ def reply():
 
 # { "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{ "from" : "123", "to": "54300", "value": "1.2"} }, { "from":"54300", "to": "789", "value": "0.7"}], "addressInfo": { "coinRisk": "45", "classification": "exchange", "balance": "12", "balanceUSD": "200000", "totalTxs": "6", "avgTxs": "514.2", "firstReceived": "08/16/2014 22:43", "totalReceived": "92", "totalSent": "92"} , "txsHistory": [ { "blockHeight": "500000", "txsHash": "a00...", "txsDate": "12/20/2017", "amount": "2", "amountUSD": "13000", "from": "blah", "to": "blah" } ] }
 
-
+# https://api.gdax.com/products/btc-usd/candles?start=2017-07-04T15:25:00.00000Z&end=2017-07-04T16:00:00.00000Z&granularity=60
 
 @app.route('/data')
 def data():
@@ -165,7 +165,10 @@ def txsHistory(addressId):
             data["height"] = txs["blockheight"]
             data["time"] = txs["blocktime"]
             data["amount"] = txs["valueOut"]
-            data["amountUsd"] = btcUSD(data["amount"])
+            # change to price at relative time
+            price = btcPrice(txs["blocktime"])
+            # data["amountUsd"] = btcUSD(data["amount"])
+            data["amountUsd"] = price * data["amount"]
             # get in address and amount 
             in_list = []
             for vin in txs["vout"]:
@@ -195,11 +198,20 @@ def txsHistory(addressId):
             txList.append(data)
     return txList
 
+def btcPrice(date):
+    # https://api.coindesk.com/v1/bpi/historical/close.json?start=2013-09-01&end=2013-09-05
+    date = datetime.datetime.fromtimestamp(date).strftime('%Y-%m-%d')
+    api = "https://api.coindesk.com/v1/bpi/historical/close.json?start="+str(date)+"&end="+str(date)
+    r = requests.get(api)
+    price = json.loads(r.text)
+    return price["bpi"][date]
+
 def firstTx(txList):
     firstTxTime = time.time()
     for tx in txList:
         if tx["time"] <= firstTxTime:
             firstTxTime = tx["time"]
+    firstTxTime = datetime.datetime.fromtimestamp(firstTxTime).strftime('%Y-%m-%d %H:%M:%S')
     return firstTxTime
 
 def coinRisk(addressId):

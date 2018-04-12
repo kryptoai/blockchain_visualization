@@ -66,6 +66,19 @@
             return JSON.stringify(obj, null, 4);
         }
 
+        // check if obj is in list 
+        function containsObject(obj, list) {
+            var i;
+            for (i = 0; i < list.length; i++) {
+                if (list[i] === obj) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
         function createNetwork() {
 
             UserWalletID = document.getElementById('node-id').value;
@@ -130,6 +143,7 @@
                             // var from = [];
 
                             var metaData = [];
+                            var tmpData = [];
 
                             for (var j=0;j < data["edges"].length; j++){
                                 if ( data["edges"][j]["to"] == data["nodes"]["intermediary"][i]){
@@ -137,7 +151,9 @@
                                     obj["direction"] = "from";
                                     obj["addr"] = data["edges"][j]["from"];
                                     obj["value"] = data["edges"][j]["value"];
-                                    metaData.push(obj);
+                                    if (!containsObject(metaData, obj)){
+                                        metaData.push(obj);
+                                    }
                                     // metaData.append({ "direction": "from", "addr": data["edges"][j]["from"], "value": data["edges"][j]["value"]});
                                     // console.log(metaData);
                                     // console.log("((((((((((((((((((((")
@@ -146,8 +162,18 @@
                                     obj["direction"] = "to";
                                     obj["addr"] = data["edges"][j]["to"];
                                     obj["value"] = data["edges"][j]["value"];
-                                    metaData.push(obj);
+                                    if (!containsObject(metaData,obj)){
+                                        metaData.push(obj);
+                                    }
+                                    
                                     // metaData.append({ "direction": "to", "addr": data["edges"][j]["to"], "value": data["edges"][j]["value"]});
+                                }
+                            }
+
+                            // clean up metadata array, there are some duplicates in the array
+                            for (var i=0;i<metaData.length;i++){
+                                for(var j=0;j<tmpData.length;j++){
+                                    if
                                 }
                             }
 

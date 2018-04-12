@@ -190,7 +190,7 @@
                         for (var i=0;i<data["txsHistory"].length;i++){
                             innerData = data["txsHistory"][i];
                             t = innerData["time"];
-                            var time = new Date(t);
+                            var time = new Date(t*1000);
                             output += time + "     " + innerData["height"] + "     " + innerData["amount"] + "     " + innerData["amountUsd"] + "     " + innerData["txsHash"] + "\n";
                         }
                         document.getElementById('edges').innerHTML = output;

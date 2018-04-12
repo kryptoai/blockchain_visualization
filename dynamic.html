@@ -23,14 +23,7 @@
         table.view {
             width: 100%;
         }
-  /*      node-id {
-            width: 75%;
-        }*/
 
-/*        td { border: solid black 1px; }
-*/        
-/*        tr, td{ display: inline-block; }
-*/
         table td {
             vertical-align: top;
             display: block;
@@ -74,16 +67,8 @@
         }
 
         function createNetwork() {
-            // removeNode();
 
             UserWalletID = document.getElementById('node-id').value;
-            // for (node in nodes){
-            //     removeNode(node);
-            // }
-            // console.log(nodes);
-            // console.log("***********");
-            // nodes = new vis.DataSet();
-
             $.ajax({
                 type: "POST",
                 // url: "http://18.222.1.53/",
@@ -105,25 +90,76 @@
                             // console.log(data["nodes"]["regular"][i])
 
                             var l = labelName.substr(1,6);
-                            nodes.add({
-                                id: data["nodes"]["regular"][i],
-                                // label: data["nodes"][i]
-                                label: l,
-                                type: "regular"
-                            });
+
+                            if (data["nodes"]["regular"][i] == UserWalletID){
+                                nodes.add({
+                                    id: data["nodes"]["regular"][i],
+                                    label: l,
+                                    type: "regular",
+                                    data: data["addressInfo"]
+                                });
+
+
+                                // var inter_node = nodes.get(data["nodes"]["intermediary"][i]);
+
+                                var rootNode = nodes.get(UserWalletID);
+                                rootNode.color = {
+                                    border: '#8E3232',
+                                    background: '#FF5B5B',
+                                    highlight: {
+                                        border: '#2B7CE9',
+                                        background: '#D2E5FF'
+                                    }
+                                }
+                                nodes.update(rootNode);
+
+                            }
+                            else {
+                                nodes.add({
+                                    id: data["nodes"]["regular"][i],
+                                    // label: data["nodes"][i]
+                                    label: l,
+                                    type: "regular"
+                                });
+                            }
                         }
 
                         for (var i=0;i < data["nodes"]["intermediary"].length; i++){
 
-                            var labelName = JSON.stringify(data["nodes"]["intermediary"][i]);
-                            // console.log(labelName + "blah");
+                            // [{ "direction": "from", "addr": "a00...", "value": "10btc"}]
+                            // var from = [];
 
+                            var metaData = [];
+
+                            for (var j=0;j < data["edges"].length; j++){
+                                if ( data["edges"][j]["to"] == data["nodes"]["intermediary"][i]){
+                                    var obj = {};
+                                    obj["direction"] = "from";
+                                    obj["addr"] = data["edges"][j]["from"];
+                                    obj["value"] = data["edges"][j]["value"];
+                                    metaData.push(obj);
+                                    // metaData.append({ "direction": "from", "addr": data["edges"][j]["from"], "value": data["edges"][j]["value"]});
+                                    // console.log(metaData);
+                                    // console.log("((((((((((((((((((((")
+                                } else if (data["edges"][j]["from"] == data["nodes"]["intermediary"][i]){
+                                    var obj = {};
+                                    obj["direction"] = "to";
+                                    obj["addr"] = data["edges"][j]["to"];
+                                    obj["value"] = data["edges"][j]["value"];
+                                    metaData.push(obj);
+                                    // metaData.append({ "direction": "to", "addr": data["edges"][j]["to"], "value": data["edges"][j]["value"]});
+                                }
+                            }
+
+                            var labelName = JSON.stringify(data["nodes"]["intermediary"][i]);
                             var l = labelName.substr(1,6);
+
                             nodes.add({
                                 id: data["nodes"]["intermediary"][i],
                                 // label: data["nodes"][i]
                                 label: l,
-                                type: "intermediary"
+                                type: "intermediary",
+                                info: metaData
                             });
 
                             var inter_node = nodes.get(data["nodes"]["intermediary"][i]);
@@ -141,28 +177,35 @@
 
 
                         for (var i=0; i<data["edges"].length; i++){
-              
+            
                                 edges.add({
                                     from: data["edges"][i]["from"],
-                                    to: data["edges"][i]["to"]
+                                    to: data["edges"][i]["to"],
+                                    value: data["edges"][i]["value"]
                                 });
 
                         }   
 
-                        // console.log(edges);
-
-                        // for (var i=0; i<data["edges"].length; i++){
-                        //     for (j in data["edges"][i]){
-
-                        //         console.log(j + "blah");
-                        //         console.log(data["edges"][i][j])
-                        //         edges.add({
-                        //             from: j,
-                        //             to: data["edges"][i][j]
-                        //         });
-
-                        //     }
-                        // }                       
+                        var output = "Block Date                              Block Height    BTC amount      BTC USD           Transaction Hash\n";
+                        for (var i=0;i<data["txsHistory"].length;i++){
+                            innerData = data["txsHistory"][i];
+                            t = innerData["time"];
+                            var time = new Date(t);
+                            output += time + "     " + innerData["height"] + "     " + innerData["amount"] + "     " + innerData["amountUsd"] + "     " + innerData["txsHash"] + "\n";
+                        }
+                        document.getElementById('edges').innerHTML = output;
+                        data = data["addressInfo"];
+                        var output = "Balance: " + data["balance"] + "\n";
+                        output = output + "Balance USD: " + data["balanceUSD"] + "\n";
+                        output += "Classification: " + data["classification"] + "\n";
+                        output += "Coin Risk : " + data["coinRisk"] + "\n";
+                        output += "Total Received: " + data["totalReceived"] + "\n";
+                        output += "Total Sent: " + data["totalSent"] + "\n";
+                        output += "Total Transactions: " + data["totalTxs"] + "\n";
+                        output += "Average Transaction Size: " + data["avgTxs"] + "\n";
+                        output += "First Transaction: " + data["firstTx"] + "\n";
+                        document.getElementById('wallet').innerHTML = output;
+                        console.log(data[0]["data"]);
 
                     }
                     catch (err) {
@@ -261,6 +304,28 @@
             }
         }
 
+        function createButton() {
+            try {
+                var button = document.createElement("input");
+                button.type = "button";
+                button.value = "im a button";
+                // button.onclick = func;
+                // context.appendChild(button);
+            }
+            catch (err) {
+                alert(err);
+            }
+        }
+
+        // function updatesf() {
+        //     try {
+        //         nodes.update([{ id: '18jBahWxRXYj7y6ok3FdMUeXy1wMCDeNgQ', color: {background: '#RRGGBB'}}]);
+        //     }
+        //     catch (err) {
+        //         alert(err);
+        //     }
+        // }
+
         function draw() {
             // create an array with nodes
             nodes = new vis.DataSet();
@@ -343,7 +408,28 @@
                 //     console.log("intermediary node")
                 // console.log(output)
 
+                if (clickedNodes[0]["id"] == UserWalletID ){
+                    console.log("blah");
+                    data = clickedNodes[0]["data"];
+                    var output = "Balance: " + data["balance"] + "\n";
+                    output = output + "Balance USD: " + data["balanceUSD"] + "\n";
+                    output += "Classification: " + data["classification"] + "\n";
+                    output += "Coin Risk : " + data["coinRisk"] + "\n";
+                    output += "Total Received: " + data["totalReceived"] + "\n";
+                    output += "Total Sent: " + data["totalSent"] + "\n";
+                    output += "Total Transactions: " + data["totalTxs"] + "\n";
+                    output += "Average Transaction Size: " + data["avgTxs"] + "\n";
+                    output += "First Transaction: " + data["firstTx"] + "\n";
+                    document.getElementById('wallet').innerHTML = output;
+                    console.log(clickedNodes[0]["data"]);
+                }
+
                 if (clickedNodes[0]["type"] == "regular"){
+
+                    // var output = "2017-04-01 12:00    500825     ";
+
+                    // nodes.update([{ id: '18jBahWxRXYj7y6ok3FdMUeXy1wMCDeNgQ', color: {background: '#RRGGBB'}}]);
+
                     var output = "Wallet Address: " + clickedNodes[0]["id"];
                     output += "\n";
                     output += "Coin Rank: 20%";
@@ -362,14 +448,40 @@
 
                 if (clickedNodes[0]["type"] == "intermediary"){
                     console.log("intermediary node")
-                    var output = "From: ";
+                    var output = "";
 
-                    for(edge in clickedEdges){
-                        console.log(edge);
-                        output += edge["from"];
+                    var from = [];
+                    var to = [];
+                    for (var i=0; i<clickedNodes[0]["info"].length;i++){
+                        if (clickedNodes[0]["info"][i]["direction"] == "from"){
+                            from.push(clickedNodes[0]["info"][i]);
+                        } else {
+                            to.push(clickedNodes[0]["info"][i]);
+                        }
                     }
+
+                    for (var i=0;i<from.length;i++){
+                        output += "From:    " + from[i]["addr"] + "     " + from[i]["value"] + "\n";
+                    }
+
+                    for (var i=0;i<to.length;i++){
+                        output += "to:  " + to[i]["addr"] + "   " + to[i]["value"] + "\n";
+                    }
+
+                    console.log(from);
+                    console.log(to);
+
+                    // console.log(clickedNodes[0]);
+
+
+
+                    // for(edge in clickedEdges){
+                    //     console.log(edge);
+                    //     output += edge["from"];
+                    // }
                     // for (edge )
                     console.log(output)
+                    document.getElementById('wallet').innerHTML = output;
                 }
 
                 // }
@@ -377,7 +489,7 @@
 
 
 
-                document.getElementById('edges').innerHTML = output;
+                // document.getElementById('edges').innerHTML = output;
             });
 
         }
@@ -395,7 +507,7 @@
             <table width="400">
                 <tr>
                     <td></td>
-                    <td><label for="node-id">BTC Wallet Address</label></td>
+                    <td><label for="node-id">BTC Address</label></td>
                     <td><input id="node-id" type="text" style="width:300px;" value="18jBahWxRXYj7y6ok3FdMUeXy1wMCDeNgQ"></td>
                 </tr>
 
@@ -435,16 +547,25 @@
             <h2>Wallet Interaction</h2>
             <div id="network"></div>
         </td> -->
+
+
+        <td>
+            <h2>Wallet Data</h2>
+            <pre id="wallet"></pre>
+<!--             <button id="but" onclick="createButton()" type="button">Click Me!</button>
+ -->        </td>
+
+
         <td>
             <h2>Transaction Data</h2>
             <pre id="edges"></pre>
         </td>
-
- <!--        <td>
+<!-- 
+        <td>
             <h2>Wallet Data</h2>
             <pre id="wallet"></pre>
-        </td> -->
-
+        </td>
+ -->
 
     </tr>
 </table>

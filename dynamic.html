@@ -171,11 +171,10 @@
                             }
 
                             // clean up metadata array, there are some duplicates in the array
-                            for (var i=0;i<metaData.length;i++){
-                                for(var j=0;j<tmpData.length;j++){
-                                    if
-                                }
-                            }
+                            // for (var i=0;i<metaData.length;i++){
+                            //     for()
+
+                            // }
 
                             var labelName = JSON.stringify(data["nodes"]["intermediary"][i]);
                             var l = labelName.substr(1,6);
@@ -221,10 +220,10 @@
                         }
                         document.getElementById('edges').innerHTML = output;
                         data = data["addressInfo"];
-                        var output = "Balance: " + data["balance"] + "\n";
+                        var output = "Balance BTC: " + data["balance"] + "\n";
                         output = output + "Balance USD: " + data["balanceUSD"] + "\n";
                         output += "Classification: " + data["classification"] + "\n";
-                        output += "Coin Risk : " + data["coinRisk"] + "\n";
+                        output += "Coin Risk Score: " + data["coinRisk"] + "\n";
                         output += "Total Received: " + data["totalReceived"] + "\n";
                         output += "Total Sent: " + data["totalSent"] + "\n";
                         output += "Total Transactions: " + data["totalTxs"] + "\n";

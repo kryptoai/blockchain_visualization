@@ -25,6 +25,9 @@ def reply():
         data = request.get_json()
         # print data
         obj = findWalletTxs(data["walletId"])
+        print "**********"
+        print obj
+        print "**********"
         obj["addressInfo"] = addressInfo(data["walletId"])
         obj["txsHistory"] = txsHistory(data["walletId"])
         firstTransaction = firstTx(txsHistory(data["walletId"]))
@@ -146,10 +149,13 @@ def numberOfTxs(addressId):
     db = client.cryptoData
     queryWallet = { "_id": addressId }
     cursor = db.wallets.find(queryWallet)
+    counter = 0
     for wallet in cursor:
         counter = 0
         for txs in wallet["txs"]:
             counter += 1
+    if counter == 0:
+        counter = 1
     return counter
 
 def txsHistory(addressId):

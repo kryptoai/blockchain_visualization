@@ -1,4 +1,5 @@
 from flask import Flask, request, redirect, current_app
+from flask_cors import CORS, cross_origin
 import flask
 from functools import wraps
 from pymongo import MongoClient
@@ -7,9 +8,34 @@ import json
 import time
 import datetime
 
+from bitcoin.wallet import CBitcoinSecret
+from bitcoin.signmessage import BitcoinMessage, VerifyMessage, SignMessage
+
+
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+@app.route('/api/btc/sign', methods=['POST'])
+def signMessage():
+    data = request.get_json()
+    key = CBitcoinSecret(data["key"])
+    msg = BitcoinMessage(data["msg"])
+    return SignMessage(key,msg)
+
+@app.route('/api/btc/verify', methods=['POST'])
+def verifyMessage():
+    data = request.get_json()
+    addr = data["addr"]
+    msg = BitcoinMessage(data["msg"])
+    sig = data["sig"]
+    if VerifyMessage(addr,msg,sig):
+        return "verified"
+    else:
+        return "unverified"
 
 @app.route('/', methods=['GET','POST'])
+@cross_origin()
 def reply():
     data = request.get_json()
     # print data["walletId"]
@@ -136,6 +162,9 @@ def addressInfo(addressId):
     r = requests.get("https://blockexplorer.com/api/addr/" + addressId + "/totalSent")
     addressInfo["totalSent"] = int(r.text) * 0.00000001
     addressInfo["avgTxs"] = float(addressInfo["totalSent"]) / float(numberOfTxs(addressId))
+    print "(((((((((((("
+    print addressInfo
+    print ")))))))))))))"
     return addressInfo
 
 
@@ -232,3 +261,8 @@ if __name__ == "__main__":
 
 
 client = MongoClient('18.222.1.53/admin',username='admin',password='diet4coke')
+
+
+
+# 3R2ckgQNe4W7iQUziT75sP7HZKxLobuzd2
+# 3R1tPyUridmxzjQy8PPuK6hv1JyvT6MSQc

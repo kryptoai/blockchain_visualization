@@ -34,10 +34,12 @@ def verifyMessage():
     else:
         return "unverified"
 
+
 @app.route('/', methods=['GET','POST'])
 @cross_origin()
 def reply():
-    data = request.get_json()
+    # data = request.get_json()
+    # obj = json.loads('{ "nodes" : ["123" , "456" , "789"], "edges" : [{ "from" : "123", "intermediary": "54300", "value": "1.2"} }, { "intermediary":"54300", "to": "789", "value": "0.7"}] }')
     # print data["walletId"]
     # nodes = []
     # edges = []
@@ -48,22 +50,47 @@ def reply():
     # obj["edges"] = edges
     # print json.dumps(obj)
     if request.method == "POST":
-        data = request.get_json()
-        # print data
-        obj = findWalletTxs(data["walletId"])
-        print "**********"
-        print obj
-        print "**********"
-        obj["addressInfo"] = addressInfo(data["walletId"])
-        obj["txsHistory"] = txsHistory(data["walletId"])
-        firstTransaction = firstTx(txsHistory(data["walletId"]))
-        obj["addressInfo"]["firstTx"] = firstTransaction        
-        print json.dumps(obj)
-        return flask.jsonify(obj)
+        # data = request.get_json()
+        # # print data
+        # obj = findWalletTxs(data["walletId"])
+        # print("**********")
+        # print(obj)
+        # print("**********")
+        # obj["addressInfo"] = addressInfo(data["walletId"])
+        # obj["txsHistory"] = txsHistory(data["walletId"])
+        # firstTransaction = firstTx(txsHistory(data["walletId"]))
+        # obj["addressInfo"]["firstTx"] = firstTransaction        
+        # print(json.dumps(obj))
+        # return flask.jsonify(obj)
         # print json.dumps(addressInfo(data["walletId"]))
 
         # return flask.jsonify({ "nodes" : ["123" , "456" , "789"], "edges" : [{ "123" : "789" }, {"456": "789"}] })
-        # return flask.jsonify({ "nodes" : { "regular" : ["123" , "456" , "789"], "intermediary": ["213", "345", "111"] }, "edges" : [{"123" : "456"}] })
+        return flask.jsonify({
+    "nodes": {
+
+        "regular": [
+            "260564177", "260478123", "260712366", "260952144"
+        ],
+
+        "intermediary": [
+            "260172855"
+        ]
+    }, 
+
+    "edges": [
+        {
+            "from": "260564177",
+            "to": "260172855",
+            "value": "666"
+        },
+        {
+
+            "from": "260172855",
+            "to": "260952144",
+            "value": "13"
+        }
+    ]
+})
     elif request.method == "GET":
         return "test"
 
@@ -162,10 +189,10 @@ def addressInfo(addressId):
     r = requests.get("https://blockexplorer.com/api/addr/" + addressId + "/totalSent")
     addressInfo["totalSent"] = int(r.text) * 0.00000001
     addressInfo["avgTxs"] = float(addressInfo["totalSent"]) / float(numberOfTxs(addressId))
-    print "(((((((((((("
-    print addressInfo
-    print ")))))))))))))"
-    return addressInfo
+    print("((((((((((((")
+    print(addressInfo)
+    print(")))))))))))))")
+    return(addressInfo)
 
 
 def btcUSD(btc):
